@@ -1,14 +1,14 @@
 import React, { useState, useMemo, useEffect } from 'react';
-import { Slider } from '@/components/ui/slider';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
+import { Slider } from "@/components/ui/slider";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { LineChart, Line, XAxis, YAxis, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 
 const LEVELS = ['Survival', 'Security', 'Happiness', 'Achievement', 'Experience', 'Self Actualization'];
 const COLORS = ['#FF6B6B', '#FFA06B', '#FECA57', '#48DBFB', '#54A0FF', '#5F27CD'];
-const DESCRIPTIONS = {
+const DESCRIPTIONS: {[key: string]: string} = {
   'Survival': "Basic needs for physical survival and biological functioning.",
   'Security': "Safety, stability, and freedom from fear.",
   'Happiness': "Feelings of joy, contentment, and positive emotions.",
@@ -17,15 +17,14 @@ const DESCRIPTIONS = {
   'Self Actualization': "Realizing personal potential, self-fulfillment, seeking personal growth and peak experiences."
 };
 
-const NeedsPyramidTracker = () => {
-  const [levelValues, setLevelValues] = useState(LEVELS.map(() => 50));
-  const [selectedLevel, setSelectedLevel] = useState(null);
-  const [history, setHistory] = useState([]);
+const NeedsPyramidTracker: React.FC = () => {
+  const [levelValues, setLevelValues] = useState<number[]>(LEVELS.map(() => 50));
+  const [selectedLevel, setSelectedLevel] = useState<number | null>(null);
+  const [history, setHistory] = useState<Array<{date: string; values: number[]; userName: string}>>([]);
   const [showHistory, setShowHistory] = useState(false);
   const [userName, setUserName] = useState('');
 
   useEffect(() => {
-    // Load data from localStorage on component mount
     const savedLevelValues = localStorage.getItem('needsPyramidValues');
     const savedHistory = localStorage.getItem('needsPyramidHistory');
     const savedUserName = localStorage.getItem('needsPyramidUserName');
@@ -42,16 +41,14 @@ const NeedsPyramidTracker = () => {
   }, []);
 
   useEffect(() => {
-    // Save level values to localStorage whenever they change
     localStorage.setItem('needsPyramidValues', JSON.stringify(levelValues));
   }, [levelValues]);
 
   useEffect(() => {
-    // Save user name to localStorage whenever it changes
     localStorage.setItem('needsPyramidUserName', userName);
   }, [userName]);
 
-  const handleSliderChange = (index, value) => {
+  const handleSliderChange = (index: number, value: number[]) => {
     setLevelValues(prev => {
       const newValues = [...prev];
       newValues[index] = value[0];
@@ -98,7 +95,7 @@ const NeedsPyramidTracker = () => {
     [levelValues]
   );
 
-  const Pyramid = ({ data }) => {
+  const Pyramid: React.FC<{data: any[]}> = ({ data }) => {
     return (
       <div className="relative w-full aspect-square">
         {data.map((item, index) => {
@@ -127,14 +124,14 @@ const NeedsPyramidTracker = () => {
     );
   };
 
-  const HistoryChart = () => {
+  const HistoryChart: React.FC = () => {
     const chartData = history.map(snapshot => ({
       date: new Date(snapshot.date).toLocaleDateString(),
       userName: snapshot.userName || 'Unknown',
       ...LEVELS.reduce((acc, level, index) => {
         acc[level] = snapshot.values[index];
         return acc;
-      }, {})
+      }, {} as {[key: string]: number})
     }));
 
     return (
@@ -144,22 +141,7 @@ const NeedsPyramidTracker = () => {
           <LineChart data={chartData}>
             <XAxis dataKey="date" />
             <YAxis />
-            <Tooltip content={({ active, payload, label }) => {
-              if (active && payload && payload.length) {
-                return (
-                  <div className="bg-white p-2 border rounded shadow">
-                    <p className="font-bold">{`Date: ${label}`}</p>
-                    <p>{`User: ${payload[0].payload.userName}`}</p>
-                    {payload.map((entry, index) => (
-                      <p key={index} style={{ color: entry.color }}>
-                        {`${entry.name}: ${entry.value}`}
-                      </p>
-                    ))}
-                  </div>
-                );
-              }
-              return null;
-            }} />
+            <Tooltip />
             <Legend />
             {LEVELS.map((level, index) => (
               <Line key={level} type="monotone" dataKey={level} stroke={COLORS[index]} />
@@ -220,7 +202,7 @@ const NeedsPyramidTracker = () => {
       <Dialog open={selectedLevel !== null} onOpenChange={() => setSelectedLevel(null)}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle style={{ color: COLORS[selectedLevel] }}>
+            <DialogTitle style={{ color: COLORS[selectedLevel!] }}>
               {selectedLevel !== null ? LEVELS[selectedLevel] : ''}
             </DialogTitle>
           </DialogHeader>

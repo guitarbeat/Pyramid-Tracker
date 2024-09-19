@@ -1,9 +1,12 @@
-import NeedsPyramidTracker from '@/components/needsPyramidTracker';
+"use client";
+
+import NeedsPyramidTracker from './needsPyramidTracker';
+import React from 'react';
 
 export default function Home() {
   return (
     <main className="flex min-h-screen flex-col items-center justify-between p-24">
       <NeedsPyramidTracker />
     </main>
-  )
+  );
 }

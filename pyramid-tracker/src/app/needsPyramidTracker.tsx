@@ -1,3 +1,6 @@
+// Mark the component as a Client Component
+"use client";
+
 import React, { useState, useMemo, useEffect } from 'react';
 import { Slider } from "@/components/ui/slider";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -163,7 +166,7 @@ const NeedsPyramidTracker: React.FC = () => {
             type="text" 
             placeholder="Enter your name" 
             value={userName} 
-            onChange={(e) => setUserName(e.target.value)}
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) => setUserName(e.target.value)} // TypeScript fix
             className="flex-grow"
           />
           <Button onClick={saveSnapshot} disabled={!userName.trim()}>Save Snapshot</Button>
@@ -180,7 +183,7 @@ const NeedsPyramidTracker: React.FC = () => {
                 </label>
                 <Slider
                   value={[levelValues[index]]}
-                  onValueChange={(value) => handleSliderChange(index, value)}
+                  onValueChange={(value: number[]) => handleSliderChange(index, value)} // TypeScript fix
                   max={100}
                   step={1}
                   className="w-full"
@@ -213,7 +216,7 @@ const NeedsPyramidTracker: React.FC = () => {
                 <div className="space-y-4">
                   <Slider
                     value={[levelValues[selectedLevel]]}
-                    onValueChange={(value) => handleSliderChange(selectedLevel, value)}
+                    onValueChange={(value: number[]) => handleSliderChange(selectedLevel, value)} // TypeScript fix
                     max={100}
                     step={1}
                     className="w-full"
